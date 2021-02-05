@@ -61,7 +61,12 @@ class _LoginFormState extends State<LoginForm> {
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState.validate()) {}
+                            if (_formKey.currentState.validate()) {
+                              Navigator.pushNamed(
+                                context,
+                                '/admin-tabs',
+                              );
+                            }
                           },
                           child: Text('Войти')),
                     ),
