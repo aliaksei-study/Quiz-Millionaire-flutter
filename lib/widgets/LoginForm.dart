@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_millionaire_flutter_test/service/Service.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -7,6 +8,9 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +28,7 @@ class _LoginFormState extends State<LoginForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     TextFormField(
+                      controller: emailController,
                       validator: (String value) {
                         if (value.isEmpty) {
                           return 'Введите почту';
@@ -44,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
                     Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
+                          controller: passwordController,
                           obscureText: true,
                           validator: (String value) {
                             if (value.length < 6) {
@@ -60,12 +66,20 @@ class _LoginFormState extends State<LoginForm> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async{
                             if (_formKey.currentState.validate()) {
-                              Navigator.pushNamed(
-                                context,
-                                '/admin-tabs',
-                              );
+                              final String email = emailController.text;
+                              final String password = passwordController.text;
+
+                              final int statusCode = await login(email, password);
+                              print(statusCode);
+                              if(statusCode == 200) {
+                                await getQuestions();
+                                Navigator.pushNamed(
+                                  context,
+                                  '/admin-tabs',
+                                );
+                              }
                             }
                           },
                           child: Text('Войти')),
