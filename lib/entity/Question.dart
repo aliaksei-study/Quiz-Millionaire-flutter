@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:quiz_millionaire_flutter_test/entity/Difficulty.dart';
+
 import 'Answer.dart';
 import 'Category.dart';
 

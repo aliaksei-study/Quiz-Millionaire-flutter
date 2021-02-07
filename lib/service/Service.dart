@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
 import 'package:quiz_millionaire_flutter_test/service/request/AuthRequest.dart';
 import 'package:quiz_millionaire_flutter_test/service/response/JwtResponse.dart';
@@ -30,6 +31,20 @@ Future<List<Question>> getQuestions() async {
 
   if(response.statusCode == 200) {
     return questionsFromJson(response.body);
+  }
+
+  return null;
+}
+
+Future<List<Category>> getCategories() async {
+  final response = await http.get(apiURL + "/categories", headers: {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Accept': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token',
+  });
+
+  if(response.statusCode == 200) {
+    return categoriesFromJson(response.body);
   }
 
   return null;

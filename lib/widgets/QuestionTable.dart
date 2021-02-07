@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
 import 'package:quiz_millionaire_flutter_test/service/Service.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/AddQuestionDialog.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/ViewQuestionDialog.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/selectors/CategorySelector.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/selectors/DifficultySelector.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class QuestionsTableWidget extends StatefulWidget {
@@ -33,13 +37,28 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
     super.initState();
   }
 
-  Future<void> showAddingQuestionDialog(
+  Future<void> showEditingQuestionDialog(
       BuildContext context, Question question) async {
     return await showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Text("dfvfvd"),
+            content: Column(
+              children: <Widget>[
+                DifficultySelector(difficulty: question.difficulty),
+                CategorySelector(category: question.category),
+                Row(
+                  children: [
+                    Checkbox(
+                      onChanged: null,
+                      value: question.isTemporal,
+                      activeColor: Color(0xFF6200EE),
+                    ),
+                    Text('Временный вопрос?'),
+                  ],
+                ),
+              ],
+            ),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -73,10 +92,61 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: DataTable(
+    return SingleChildScrollView(
+        child: Column(children: [
+      Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RaisedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => AddQuestionDialog(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+                textColor: Colors.white,
+                padding: const EdgeInsets.all(0.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color(0xFF0D47A1),
+                        Color(0xFF1976D2),
+                        Color(0xFF42A5F5),
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+                  child: const Text('Добавить вопрос',
+                      style: TextStyle(fontSize: 20)),
+                ),
+              ),
+              RaisedButton(
+                onPressed: () {},
+                textColor: Colors.white,
+                padding: const EdgeInsets.all(0.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color(0xFFD70F16),
+                        Color(0xFF84222B),
+                        Color(0xFF973F4A),
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+                  child: const Text('Удалить', style: TextStyle(fontSize: 20)),
+                ),
+              ),
+            ],
+          )),
+      DataTable(
         showBottomBorder: true,
         sortAscending: sort,
         sortColumnIndex: 0,
@@ -165,7 +235,8 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute<void>(
-                                    builder: (BuildContext context) => ViewQuestionDialog(question: question),
+                                    builder: (BuildContext context) =>
+                                        ViewQuestionDialog(question: question),
                                     fullscreenDialog: true,
                                   ),
                                 );
@@ -182,7 +253,7 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                               color: Colors.blue,
                               tooltip: 'Редактировать',
                               onPressed: () async {
-                                await showAddingQuestionDialog(
+                                await showEditingQuestionDialog(
                                     context, question);
                               },
                             ),
@@ -192,6 +263,6 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                     ]))
             .toList(),
       ),
-    ));
+    ]));
   }
 }
