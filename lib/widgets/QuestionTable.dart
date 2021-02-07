@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
 import 'package:quiz_millionaire_flutter_test/service/Service.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/AddQuestionDialog.dart';
@@ -17,11 +18,11 @@ class QuestionsTableWidget extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
-  List<Question> selectedQuestions;
+  List<Question> selectedQuestions = [];
   List<Question> questions = [];
   bool sort;
 
-  fetchQuestions() async {
+  fetchQuestions(BuildContext context) async {
     questions = await getQuestions();
     questions.sort((a, b) => b.questionText.compareTo(a.questionText));
     setState(() {
@@ -31,9 +32,13 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
 
   @override
   void initState() {
+    Timer.run(() async{
+      showSpinnerDialog(context);
+      await fetchQuestions(context);
+      Navigator.of(context, rootNavigator: true).pop();
+    });
     sort = false;
     selectedQuestions = [];
-    fetchQuestions();
     super.initState();
   }
 
@@ -43,7 +48,8 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Column(
+            content: SingleChildScrollView(
+              child: Column(
               children: <Widget>[
                 DifficultySelector(difficulty: question.difficulty),
                 CategorySelector(category: question.category),
@@ -58,7 +64,7 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                   ],
                 ),
               ],
-            ),
+            )),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -127,7 +133,11 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                 ),
               ),
               RaisedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if(selectedQuestions.isNotEmpty) {
+                    //todo request
+                  }
+                },
                 textColor: Colors.white,
                 padding: const EdgeInsets.all(0.0),
                 child: Container(

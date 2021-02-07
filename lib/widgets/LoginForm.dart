@@ -71,10 +71,11 @@ class _LoginFormState extends State<LoginForm> {
                               final String email = emailController.text;
                               final String password = passwordController.text;
 
+                              showSpinnerDialog(context);
                               final int statusCode = await login(email, password);
+                              Navigator.of(context).pop();
                               print(statusCode);
                               if(statusCode == 200) {
-                                await getQuestions();
                                 Navigator.pushNamed(
                                   context,
                                   '/admin-tabs',

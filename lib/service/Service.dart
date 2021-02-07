@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
 import 'package:quiz_millionaire_flutter_test/service/request/AuthRequest.dart';
 import 'package:quiz_millionaire_flutter_test/service/response/JwtResponse.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 final String apiURL = "http://192.168.0.102:8080/api/v1";
 
@@ -48,4 +50,22 @@ Future<List<Category>> getCategories() async {
   }
 
   return null;
+}
+
+Future<void> showSpinnerDialog(
+    BuildContext context) async {
+  return await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: Column(
+              children: [SpinKitRotatingCircle(
+                color: Colors.blue,
+                size: 50.0,
+              )],
+            ),
+          ),
+        );
+      });
 }
