@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 /// This is the stateful widget that the main application instantiates.
 class DifficultySelector extends StatefulWidget {
   final String difficulty;
+  final Function(String) onDifficultyChange;
 
-  DifficultySelector({Key key, @required this.difficulty}) : super(key: key);
+  DifficultySelector({Key key, @required this.difficulty, @required this.onDifficultyChange}) : super(key: key);
 
   @override
   _DifficultySelectorState createState() => _DifficultySelectorState();
@@ -36,6 +37,7 @@ class _DifficultySelectorState extends State<DifficultySelector> {
         setState(() {
           dropdownValue = newValue;
         });
+        widget.onDifficultyChange(newValue);
       },
       items: <String>['EASY', 'MEDIUM', 'HARD', 'NIGHTMARE']
           .map<DropdownMenuItem<String>>((String value) {

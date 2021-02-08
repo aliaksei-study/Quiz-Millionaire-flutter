@@ -5,8 +5,9 @@ import 'package:quiz_millionaire_flutter_test/service/Service.dart';
 /// This is the stateful widget that the main application instantiates.
 class CategorySelector extends StatefulWidget {
   final Category category;
+  final Function(Category) onCategoryChange;
 
-  CategorySelector({Key key, @required this.category}) : super(key: key);
+  CategorySelector({Key key, @required this.category, @required this.onCategoryChange}) : super(key: key);
 
   @override
   _CategorySelectorState createState() => _CategorySelectorState();
@@ -53,9 +54,11 @@ class _CategorySelectorState extends State<CategorySelector> {
         color: Colors.deepPurpleAccent,
       ),
       onChanged: (String newValue) {
+        Category updatedCategory = categories.firstWhere((element) => element.categoryName == newValue);
         setState(() {
-          category = categories.firstWhere((element) => element.categoryName == newValue);
+          category = updatedCategory;
         });
+        widget.onCategoryChange(updatedCategory);
       },
       items: items,
     );

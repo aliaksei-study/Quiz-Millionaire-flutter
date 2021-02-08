@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
 import 'package:quiz_millionaire_flutter_test/service/Service.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/AddQuestionDialog.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/EditQuestionDialog.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/ViewQuestionDialog.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/CategorySelector.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/DifficultySelector.dart';
@@ -32,7 +35,7 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
 
   @override
   void initState() {
-    Timer.run(() async{
+    Timer.run(() async {
       showSpinnerDialog(context);
       await fetchQuestions(context);
       Navigator.of(context, rootNavigator: true).pop();
@@ -42,37 +45,25 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
     super.initState();
   }
 
+  updateQuestions(Question updatedQuestion) {
+    setState(() {
+      int questionPosition =
+          questions.indexWhere((element) => element.id == updatedQuestion.id);
+      questions.replaceRange(
+          questionPosition, questionPosition + 1, List.from([updatedQuestion]));
+    });
+  }
+
   Future<void> showEditingQuestionDialog(
       BuildContext context, Question question) async {
     return await showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Column(
-              children: <Widget>[
-                DifficultySelector(difficulty: question.difficulty),
-                CategorySelector(category: question.category),
-                Row(
-                  children: [
-                    Checkbox(
-                      onChanged: null,
-                      value: question.isTemporal,
-                      activeColor: Color(0xFF6200EE),
-                    ),
-                    Text('Временный вопрос?'),
-                  ],
-                ),
-              ],
-            )),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Сохранить")),
-            ],
-          );
+          return EditQuestionDialog(
+              question: question,
+              onQuestionUpdated: (Question question) {
+                updateQuestions(question);
+              });
         });
   }
 
@@ -134,7 +125,7 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
               ),
               RaisedButton(
                 onPressed: () {
-                  if(selectedQuestions.isNotEmpty) {
+                  if (selectedQuestions.isNotEmpty) {
                     //todo request
                   }
                 },
