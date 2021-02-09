@@ -11,6 +11,8 @@ import 'package:quiz_millionaire_flutter_test/widgets/ViewQuestionDialog.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/CategorySelector.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/DifficultySelector.dart';
 
+import '../main.dart';
+
 /// This is the stateful widget that the main application instantiates.
 class QuestionsTableWidget extends StatefulWidget {
   QuestionsTableWidget({Key key}) : super(key: key);
@@ -130,9 +132,19 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                 ),
               ),
               RaisedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (selectedQuestions.isNotEmpty) {
-                    //todo request
+                    showSpinnerDialog(context);
+                    selectedQuestions.forEach((element) async {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      await deleteQuestion(element.id);
+                      Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                          builder: (context) => new QuizTabBar(),
+                        ),
+                      );
+                    });
                   }
                 },
                 textColor: Colors.white,

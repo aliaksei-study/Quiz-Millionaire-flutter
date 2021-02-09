@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/LoginForm.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/PlayerTable.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/QuestionTable.dart';
 
 void main() => runApp(Navigation());
@@ -41,7 +42,7 @@ class QuizTabBar extends StatelessWidget {
           body: TabBarView(
             children: [
               QuestionsTableWidget(),
-              Icon(Icons.directions_transit),
+              PlayersTableWidget(),
             ],
           ),
         ),
