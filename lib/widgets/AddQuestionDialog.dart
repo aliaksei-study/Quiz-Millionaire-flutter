@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Answer.dart';
+import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
+import 'package:quiz_millionaire_flutter_test/main.dart';
+import 'package:quiz_millionaire_flutter_test/service/Service.dart';
+import 'package:quiz_millionaire_flutter_test/service/request/AddQuestionRequest.dart';
+import 'package:quiz_millionaire_flutter_test/widgets/selectors/CategorySelector.dart';
 
 class AddQuestionDialog extends StatefulWidget {
-  AddQuestionDialog({Key key}) : super(key: key);
+  final Function(Question question) onQuestionAdded;
+
+  AddQuestionDialog({Key key, @required this.onQuestionAdded}) : super(key: key);
 
   @override
   _AddQuestionDialogState createState() => _AddQuestionDialogState();
@@ -18,12 +25,27 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
   final TextEditingController thirdAnswerController = TextEditingController();
   final TextEditingController fourthAnswerController = TextEditingController();
 
+  Category updatedCategory;
+
   bool _firstAnswerChecked = false;
   bool _secondAnswerChecked = false;
   bool _thirdAnswerChecked = false;
   bool _fourthAnswerChecked = false;
 
-  saveQuestion() async {
+  fetchCategories() async {
+    List<Category> categories =  await getCategories();
+    setState(() {
+      updatedCategory = categories[0];
+    });
+  }
+
+  @override
+  void initState() {
+    fetchCategories();
+    super.initState();
+  }
+
+  Future<Question> saveQuestion() async {
     List<Answer> answers = List.from([
       new Answer(
           id: null,
@@ -42,13 +64,10 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
           answerText: fourthAnswerController.value.text,
           isCorrect: _fourthAnswerChecked)
     ]);
-    Question question = new Question(
-        id: null,
-        difficulty: null,
-        questionText: questionTextController.value.text,
-        answers: answers,
-        category: null,
-        isTemporal: true);
+
+    AddQuestionRequest question = new AddQuestionRequest(category: updatedCategory, questionText: questionTextController.value.text,
+        isTemporal: true, answers: answers);
+    return await addQuestion(question);
   }
 
   Future<void> _showInvalidCheckboxDialog() async {
@@ -235,6 +254,14 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
                                         border: OutlineInputBorder())),
                               ])),
                         ])),
+                    if(updatedCategory != null) CategorySelector(
+                      category: updatedCategory,
+                      onCategoryChange: (Category category) {
+                        setState(() {
+                          updatedCategory = category;
+                        });
+                      },
+                    ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ElevatedButton(
@@ -252,8 +279,16 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
                                   (!_firstAnswerChecked &&
                                       !_secondAnswerChecked &&
                                       !_thirdAnswerChecked &&
-                                      _fourthAnswerChecked)) {
-                                saveQuestion();
+                                      _fourthAnswerChecked) && updatedCategory.categoryName != "Не выбрано") {
+                                showSpinnerDialog(context);
+                                await saveQuestion();
+                                Navigator.of(context, rootNavigator: true).pop();
+                                Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                    builder: (context) => new QuizTabBar(),
+                                  ),
+                                );
                               } else {
                                 _showInvalidCheckboxDialog();
                               }

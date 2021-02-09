@@ -87,6 +87,12 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
     }
   }
 
+  onQuestionAdded(Question question) {
+    setState(() {
+      questions.add(question);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -101,7 +107,7 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (BuildContext context) => AddQuestionDialog(),
+                      builder: (BuildContext context) => AddQuestionDialog(onQuestionAdded: onQuestionAdded,),
                       fullscreenDialog: true,
                     ),
                   );

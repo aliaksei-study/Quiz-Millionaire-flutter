@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
+import 'package:quiz_millionaire_flutter_test/service/request/AddQuestionRequest.dart';
 import 'package:quiz_millionaire_flutter_test/service/request/AuthRequest.dart';
+import 'package:quiz_millionaire_flutter_test/service/request/EditQuestionRequest.dart';
 import 'package:quiz_millionaire_flutter_test/service/response/JwtResponse.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -50,6 +54,42 @@ Future<List<Category>> getCategories() async {
   }
 
   return null;
+}
+
+Future<Question> addQuestion(AddQuestionRequest addQuestionRequest) async {
+  final response = await http.post(apiURL + "/questions", headers: {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Accept': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token',
+  }, body: jsonEncode(addQuestionRequest));
+
+  if(response.statusCode == 200) {
+    return questionFromJson(response.body);
+  }
+  
+  return null;
+}
+
+Future<Question> updateQuestion(int id, EditQuestionRequest updatedQuestion) async {
+  final response = await http.put(apiURL + "/questions/" + id.toString(), headers: {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Accept': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token',
+  }, body: jsonEncode(updatedQuestion));
+
+  if(response.statusCode == 200) {
+    return questionFromJson(response.body);
+  }
+
+  return null;
+}
+
+Future<void> deleteQuestion(int id) async {
+  await http.delete(apiURL + "/questions/" + id.toString(), headers: {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Accept': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token',
+  });
 }
 
 Future<void> showSpinnerDialog(

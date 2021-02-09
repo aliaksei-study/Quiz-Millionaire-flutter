@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Category.dart';
 import 'package:quiz_millionaire_flutter_test/entity/Question.dart';
+import 'package:quiz_millionaire_flutter_test/service/request/EditQuestionRequest.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/CategorySelector.dart';
 import 'package:quiz_millionaire_flutter_test/widgets/selectors/DifficultySelector.dart';
+import 'package:quiz_millionaire_flutter_test/service/Service.dart';
+
+import '../main.dart';
 
 class EditQuestionDialog extends StatefulWidget {
   final Question question;
@@ -71,11 +75,17 @@ class _EditQuestionDialogState extends State<EditQuestionDialog> {
           )),
       actions: <Widget>[
         TextButton(
-            onPressed: () {
-              print(updatedCategory.categoryName);
-              print(updatedDifficulty);
-              print(isTemporal);
-              Navigator.of(context).pop();
+            onPressed: () async {
+              showSpinnerDialog(context);
+              EditQuestionRequest question = new EditQuestionRequest(category: updatedCategory, difficulty: updatedDifficulty, isTemporal: isTemporal);
+              await updateQuestion(widget.question.id, question);
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => new QuizTabBar(),
+                ),
+              );
             },
             child: Text("Сохранить")),
       ],
