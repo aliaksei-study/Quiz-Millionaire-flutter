@@ -95,6 +95,11 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
     });
   }
 
+  Future<void> deleteQuestions() async {
+    return Future.wait(
+        selectedQuestions.map((item) => deleteQuestion(item.id)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -109,7 +114,9 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (BuildContext context) => AddQuestionDialog(onQuestionAdded: onQuestionAdded,),
+                      builder: (BuildContext context) => AddQuestionDialog(
+                        onQuestionAdded: onQuestionAdded,
+                      ),
                       fullscreenDialog: true,
                     ),
                   );
@@ -135,16 +142,14 @@ class _QuestionsTableWidgetState extends State<QuestionsTableWidget> {
                 onPressed: () async {
                   if (selectedQuestions.isNotEmpty) {
                     showSpinnerDialog(context);
-                    selectedQuestions.forEach((element) async {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      await deleteQuestion(element.id);
-                      Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                          builder: (context) => new QuizTabBar(),
-                        ),
-                      );
-                    });
+                    await deleteQuestions();
+                    Navigator.of(context, rootNavigator: true).pop();
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                        builder: (context) => new QuizTabBar(),
+                      ),
+                    );
                   }
                 },
                 textColor: Colors.white,
